@@ -10,16 +10,48 @@ import { api, PersonaInfo } from "@/lib/api";
 const PersonaLanding = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [view, setView] = useState<"bold" | "detailed">("bold");
+  // Get the calculated persona from navigation state or localStorage
+  const calculatedPersona = location.state?.persona || localStorage.getItem("userPersona") || "balanced";
+  
+  // Determine view based on persona type
+  const getViewFromPersona = (persona: string): "bold" | "detailed" => {
+    // Map personas to view types
+    const personaViewMap: { [key: string]: "bold" | "detailed" } = {
+      "health-conscious": "bold",
+      "health_conscious": "bold",
+      "balanced": "detailed",
+      "detail-oriented": "detailed",
+      "analytical": "detailed",
+      "tech-savvy": "detailed",
+      "quick-bold": "bold",
+      "fast-action": "bold",
+      "casual": "bold",
+      "passive": "bold",
+      "beginner": "bold",
+      "power": "detailed",
+      "intermediate": "detailed",
+      "snapshot": "bold",
+      "guided": "bold",
+      "action-oriented": "bold"
+    };
+    
+    return personaViewMap[persona] || "detailed"; // Default to detailed
+  };
+
+  const [view, setView] = useState<"bold" | "detailed">(() => getViewFromPersona(calculatedPersona));
   const [personaInfo, setPersonaInfo] = useState<PersonaInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Get the calculated persona from navigation state or localStorage
-  const calculatedPersona = location.state?.persona || localStorage.getItem("userPersona") || "balanced";
   const confidence = location.state?.confidence || localStorage.getItem("personaConfidence");
   const reasoning = location.state?.reasoning || localStorage.getItem("personaReasoning");
   const questionnaireResponses = location.state?.responses || JSON.parse(localStorage.getItem("questionnaireResponses") || "{}");
+
+  // Auto-save persona-based view preference to localStorage
+  useEffect(() => {
+    const personaBasedView = getViewFromPersona(calculatedPersona);
+    setView(personaBasedView);
+    localStorage.setItem("userViewPreference", personaBasedView);
+  }, [calculatedPersona]);
 
   // Fetch persona info from API
   useEffect(() => {
@@ -241,21 +273,28 @@ const PersonaLanding = () => {
           </p>
         </div>
 
-        {/* View Toggle */}
+        {/* View Toggle - Commented out as view is now determined by persona
         <div className="flex justify-center gap-2 mb-8">
           <Button
             variant={view === "bold" ? "default" : "outline"}
-            onClick={() => setView("bold")}
+            onClick={() => {
+              setView("bold");
+              localStorage.setItem("userViewPreference", "bold");
+            }}
           >
             Bold View
           </Button>
           <Button
             variant={view === "detailed" ? "default" : "outline"}
-            onClick={() => setView("detailed")}
+            onClick={() => {
+              setView("detailed");
+              localStorage.setItem("userViewPreference", "detailed");
+            }}
           >
             Detailed View
           </Button>
         </div>
+        */}
 
         {view === "bold" ? (
           <Card className="p-8 md:p-12 mb-8 bg-gradient-to-br from-card to-card/80 border-2 border-primary/20 shadow-xl">
@@ -332,9 +371,17 @@ const PersonaLanding = () => {
 
             <div className="mt-8 p-6 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg">
               <h4 className="text-xl font-bold mb-3">Your Personalized Dashboard</h4>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground mb-3">
                 {personaInfo.dashboard_type}
               </p>
+              <div className="flex items-center gap-2 mt-3">
+                <Badge variant={view === "bold" ? "default" : "secondary"} className="capitalize">
+                  {view === "bold" ? "🚀 Bold View" : "📊 Detailed View"}
+                </Badge>
+                <span className="text-sm text-muted-foreground">
+                  - Optimized for your {calculatedPersona.replace('-', ' ')} persona
+                </span>
+              </div>
             </div>
           </Card>
         ) : (
@@ -374,9 +421,17 @@ const PersonaLanding = () => {
 
               <div className="mb-6">
                 <h4 className="text-lg font-bold mb-3">Your Dashboard will feature:</h4>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground mb-3">
                   {personaInfo.dashboard_type}
                 </p>
+                <div className="flex items-center gap-2">
+                  <Badge variant={view === "bold" ? "default" : "secondary"} className="capitalize">
+                    {view === "bold" ? "🚀 Bold View" : "📊 Detailed View"}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">
+                    - Auto-selected for {calculatedPersona.replace('-', ' ')} persona
+                  </span>
+                </div>
               </div>
             </div>
 
