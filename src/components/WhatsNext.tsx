@@ -3,8 +3,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Lightbulb, Calendar, Target, Shield, Utensils, CheckCircle } from "lucide-react";
 
-export const WhatsNext = () => {
-  const recommendations = {
+interface WhatsNextProps {
+  recommendations?: string[];
+}
+
+export const WhatsNext = ({ recommendations: apiRecommendations }: WhatsNextProps) => {
+  const defaultRecommendations = {
     immediate: [
       { text: "Schedule follow-up thyroid test", due: "in 2 weeks", icon: Calendar },
       { text: "Increase daily steps to 8,000", current: "currently 6,200 avg.", icon: Target },
@@ -19,6 +23,15 @@ export const WhatsNext = () => {
       { text: "Dental checkup overdue by 2 months" },
     ],
   };
+
+  // If we have API recommendations, use those instead
+  const recommendations = apiRecommendations && apiRecommendations.length > 0 
+    ? {
+        immediate: apiRecommendations.slice(0, 3).map(text => ({ text, icon: Target, due: "priority" })),
+        upcoming: apiRecommendations.slice(3, 5).map(text => ({ text, due: "upcoming" })),
+        preventive: apiRecommendations.slice(5).map(text => ({ text })),
+      }
+    : defaultRecommendations;
 
   return (
     <Card className="p-6 bg-gradient-to-br from-accent/10 to-accent/5 border-accent/30">

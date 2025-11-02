@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { LabResult } from "@/data/mockLabData";
+import { LabResult } from "@/lib/api";
 import { Sparkles, TrendingUp, AlertTriangle, CheckCircle } from "lucide-react";
 
 interface HealthSummaryProps {

@@ -1,4 +1,4 @@
-import { LabResult } from "@/data/mockLabData";
+import { LabResult } from "@/lib/api";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -66,7 +66,7 @@ export const AnalystAlexView = ({ results }: AnalystAlexViewProps) => {
                   <div>
                     <span className="text-muted-foreground">Reference:</span>
                     <span className="ml-2 font-mono">
-                      {result.referenceRange.min}-{result.referenceRange.max} {result.unit}
+                      {result.reference_range.min}-{result.reference_range.max} {result.unit}
                     </span>
                   </div>
                   <div>
@@ -81,8 +81,8 @@ export const AnalystAlexView = ({ results }: AnalystAlexViewProps) => {
                     <div 
                       className="absolute top-0 left-0 h-2 bg-primary/30 rounded-full"
                       style={{ 
-                        left: `${(result.referenceRange.min / (result.referenceRange.max * 1.2)) * 100}%`,
-                        width: `${((result.referenceRange.max - result.referenceRange.min) / (result.referenceRange.max * 1.2)) * 100}%`
+                        left: `${(result.reference_range.min / (result.reference_range.max * 1.2)) * 100}%`,
+                        width: `${((result.reference_range.max - result.reference_range.min) / (result.reference_range.max * 1.2)) * 100}%`
                       }}
                     />
                     <div 
@@ -91,7 +91,7 @@ export const AnalystAlexView = ({ results }: AnalystAlexViewProps) => {
                         result.status === 'high' ? 'bg-medical-warning' : 'bg-medical-alert'
                       }`}
                       style={{ 
-                        left: `${(result.value / (result.referenceRange.max * 1.2)) * 100}%`
+                        left: `${(result.value / (result.reference_range.max * 1.2)) * 100}%`
                       }}
                     />
                   </div>
@@ -100,8 +100,8 @@ export const AnalystAlexView = ({ results }: AnalystAlexViewProps) => {
                 {result.status !== 'normal' && (
                   <p className="text-sm text-muted-foreground mt-2">
                     {result.status === 'high' 
-                      ? `${result.value - result.referenceRange.max} ${result.unit} above upper limit`
-                      : `${result.referenceRange.min - result.value} ${result.unit} below lower limit`
+                      ? `${result.value - result.reference_range.max} ${result.unit} above upper limit`
+                      : `${result.reference_range.min - result.value} ${result.unit} below lower limit`
                     }
                   </p>
                 )}

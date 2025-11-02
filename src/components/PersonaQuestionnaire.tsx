@@ -26,10 +26,10 @@ const questions = [
     question: "How do you usually track your health goals?",
     purpose: "Measures engagement and data-driven mindset",
     options: [
-      { value: "detail-oriented", label: "🟢 I log everything daily and check trends", description: "Detail-oriented user" },
-      { value: "casual", label: "🟡 I update occasionally when I remember", description: "Casual user" },
-      { value: "quick-bold", label: "🔵 I just want to see a summary without manual entry", description: "Quick & bold user" },
-      { value: "tech-savvy", label: "🟣 I rely on wearable devices to track automatically", description: "Tech-savvy user" }
+      { value: "detail-oriented", label: "I log everything daily and check trends", description: "Detail-oriented user" },
+      { value: "casual", label: "I update occasionally when I remember", description: "Casual user" },
+      { value: "quick-bold", label: "I just want to see a summary without manual entry", description: "Quick & bold user" },
+      { value: "tech-savvy", label: "I rely on wearable devices to track automatically", description: "Tech-savvy user" }
     ]
   },
   {
@@ -37,10 +37,10 @@ const questions = [
     question: "What motivates you most to use this app?",
     purpose: "Reveals emotional motivation and engagement style",
     options: [
-      { value: "goal-focused", label: "💪 To improve my fitness and lifestyle", description: "Goal-focused user" },
-      { value: "analytical", label: "📊 To understand my health data deeply", description: "Analytical user" },
-      { value: "fast-action", label: "⚡ To get quick insights and daily tips", description: "Fast-action user" },
-      { value: "health-conscious", label: "🩺 To manage a specific medical condition", description: "Health-conscious user" }
+      { value: "goal-focused", label: "To improve my fitness and lifestyle", description: "Goal-focused user" },
+      { value: "analytical", label: "To understand my health data deeply", description: "Analytical user" },
+      { value: "fast-action", label: "To get quick insights and daily tips", description: "Fast-action user" },
+      { value: "health-conscious", label: "To manage a specific medical condition", description: "Health-conscious user" }
     ]
   },
   {
@@ -48,10 +48,10 @@ const questions = [
     question: "How much time do you usually spend reviewing your health data?",
     purpose: "Detects patience and depth of interaction",
     options: [
-      { value: "fast-bold", label: "⏰ Less than 2 minutes — I prefer quick highlights", description: "Fast & bold user" },
-      { value: "balanced", label: "⌛ Around 5–10 minutes — I review trends casually", description: "Balanced user" },
-      { value: "detail-oriented", label: "🕒 More than 10 minutes — I analyze data in detail", description: "Detail-oriented user" },
-      { value: "passive", label: "🚫 I rarely review it", description: "Passive user (needs motivation UI)" }
+      { value: "fast-bold", label: "Less than 2 minutes — I prefer quick highlights", description: "Fast & bold user" },
+      { value: "balanced", label: "Around 5–10 minutes — I review trends casually", description: "Balanced user" },
+      { value: "detail-oriented", label: "More than 10 minutes — I analyze data in detail", description: "Detail-oriented user" },
+      { value: "passive", label: "I rarely review it", description: "Passive user (needs motivation UI)" }
     ]
   },
   {
@@ -59,9 +59,9 @@ const questions = [
     question: "How comfortable are you with using technology or health devices?",
     purpose: "Determines UI complexity and feature exposure",
     options: [
-      { value: "beginner", label: "👶 I prefer simple interfaces, not too technical", description: "Beginner user" },
-      { value: "intermediate", label: "👨‍💻 I'm okay exploring new features with guidance", description: "Intermediate user" },
-      { value: "power", label: "🧠 I love exploring advanced analytics and settings", description: "Power user" }
+      { value: "beginner", label: "I prefer simple interfaces, not too technical", description: "Beginner user" },
+      { value: "intermediate", label: "I'm okay exploring new features with guidance", description: "Intermediate user" },
+      { value: "power", label: "I love exploring advanced analytics and settings", description: "Power user" }
     ]
   },
   {
@@ -69,10 +69,10 @@ const questions = [
     question: "What kind of insights would you like to see first on your dashboard?",
     purpose: "Helps tailor dashboard layout",
     options: [
-      { value: "snapshot", label: "🫀 My current health score or vitals summary", description: "Snapshot/quick overview user" },
-      { value: "analytical", label: "📈 Detailed reports and trends", description: "Analytical user" },
-      { value: "guided", label: "🎯 Personalized goals and recommendations", description: "Motivated, guided user" },
-      { value: "action-oriented", label: "🔔 Reminders, tasks, or alerts", description: "Action-oriented user" }
+      { value: "snapshot", label: "My current health score or vitals summary", description: "Snapshot/quick overview user" },
+      { value: "analytical", label: "Detailed reports and trends", description: "Analytical user" },
+      { value: "guided", label: "Personalized goals and recommendations", description: "Motivated, guided user" },
+      { value: "action-oriented", label: "Reminders, tasks, or alerts", description: "Action-oriented user" }
     ]
   }
 ];

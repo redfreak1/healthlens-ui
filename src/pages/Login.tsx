@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Activity, Mail, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { mapEmailToUserId, setCurrentUser } from "@/lib/user";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,12 +13,22 @@ const Login = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock login - navigate to onboarding
+    
+    // Map username to user ID and store in localStorage
+    const userId = mapEmailToUserId(email);
+    setCurrentUser(userId, email);
+    
+    // Navigate to onboarding
     navigate("/onboarding");
   };
 
   const handleSocialLogin = (provider: string) => {
     console.log(`Logging in with ${provider}`);
+    
+    // For social login, use default user ID (could be enhanced to handle social login user mapping)
+    const defaultEmail = `${provider.toLowerCase()}@example.com`;
+    setCurrentUser('123', defaultEmail);
+    
     navigate("/onboarding");
   };
 

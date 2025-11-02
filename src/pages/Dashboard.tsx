@@ -1,19 +1,60 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Activity, Calendar, History, Sparkles, ChevronRight, Star } from "lucide-react";
-import { mockLabResults } from "@/data/mockLabData";
+import { Activity, Calendar, History, Sparkles, ChevronRight, Star, Loader2, AlertCircle, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { api, AdaptiveViewResponse, PersonaInfo } from "@/lib/api";
 import { SeniorQueView } from "@/components/SeniorQueView";
 import { AnalystAlexView } from "@/components/AnalystAlexView";
 import { HealthSummary } from "@/components/HealthSummary";
 import { PersonaBadge } from "@/components/PersonaBadge";
 import { WhatsNext } from "@/components/WhatsNext";
 import { InteractionPanel } from "@/components/InteractionPanel";
+import { getCurrentUserId } from "@/lib/user";
 
 const Dashboard = () => {
   const [timeRange, setTimeRange] = useState<"recent" | "history">("recent");
+  const [adaptiveData, setAdaptiveData] = useState<AdaptiveViewResponse | null>(null);
+  const [personaInfo, setPersonaInfo] = useState<PersonaInfo | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Get user persona from localStorage
+  const userPersona = localStorage.getItem("userPersona") || "balanced";
+
+  // Fetch adaptive view data and persona info on component mount
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        // Get the current user ID from login
+        const currentUserId = getCurrentUserId();
+        
+        // Fetch adaptive view data
+        const adaptiveViewData = await api.getAdaptiveView(currentUserId, currentUserId);
+        setAdaptiveData(adaptiveViewData);
+        
+        // Fetch persona info
+        try {
+          const personaData = await api.persona.getInfo(userPersona);
+          setPersonaInfo(personaData);
+        } catch (personaErr) {
+          console.warn('Failed to fetch persona info:', personaErr);
+          // Continue without persona info
+        }
+      } catch (err) {
+        console.error('Failed to fetch adaptive view:', err);
+        setError('Failed to load your personalized dashboard');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, [userPersona]);
 
   const handleSpeak = (text: string) => {
     if ('speechSynthesis' in window) {
@@ -26,6 +67,62 @@ const Dashboard = () => {
     }
   };
 
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "high":
+      case "critical":
+        return <TrendingUp className="w-4 h-4 text-destructive" />;
+      case "low":
+        return <TrendingDown className="w-4 h-4 text-destructive" />;
+      default:
+        return <Minus className="w-4 h-4 text-muted-foreground" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "high":
+      case "critical":
+      case "low":
+        return "border-destructive/50 bg-destructive/5";
+      default:
+        return "border-border bg-card";
+    }
+  };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="p-8 text-center">
+          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-primary" />
+          <h3 className="text-xl font-bold mb-2">Loading Your Dashboard</h3>
+          <p className="text-muted-foreground">
+            Personalizing your health insights for {userPersona} persona...
+          </p>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error || !adaptiveData) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="p-8 text-center">
+          <AlertCircle className="w-12 h-12 mx-auto mb-4 text-destructive" />
+          <h3 className="text-xl font-bold mb-2 text-destructive">Unable to Load Dashboard</h3>
+          <p className="text-muted-foreground mb-4">
+            {error || "We couldn't load your personalized dashboard at this time."}
+          </p>
+          <Button onClick={() => window.location.reload()}>
+            Try Again
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="bg-card border-b border-border shadow-sm sticky top-0 z-10">
@@ -34,11 +131,20 @@ const Dashboard = () => {
             <div className="flex items-center gap-3">
               <Activity className="w-8 h-8 text-primary" />
               <div>
-                <h1 className="text-2xl font-bold text-foreground">HealthLens</h1>
-                <p className="text-sm text-muted-foreground">Personalized Dashboard</p>
+                <h1 className="text-2xl font-bold text-foreground">
+                  {adaptiveData?.ui_components?.components?.header?.title || "HealthLens"}
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  {adaptiveData?.ui_components?.components?.header?.subtitle || "Personalized Dashboard"}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {adaptiveData?.persona && (
+                <Badge variant="secondary" className="capitalize">
+                  {adaptiveData.persona} Persona
+                </Badge>
+              )}
               <Button variant="ghost" size="sm">
                 <Calendar className="w-4 h-4 mr-2" />
                 Last Updated: Today
@@ -52,23 +158,26 @@ const Dashboard = () => {
         <div className="grid lg:grid-cols-3 gap-6 mb-8">
           {/* Persona Badge */}
           <div className="lg:col-span-1">
-            <PersonaBadge />
+            <PersonaBadge personaInfo={personaInfo} />
           </div>
 
           {/* Health Summary */}
           <div className="lg:col-span-2">
-            <HealthSummary results={mockLabResults} />
+            <HealthSummary results={adaptiveData?.ui_components?.components?.results_view?.data || []} />
           </div>
         </div>
 
         {/* What's Next Recommendations */}
         <div className="mb-8">
-          <WhatsNext />
+          <WhatsNext recommendations={adaptiveData?.recommendations} />
         </div>
 
         {/* Interaction Panel */}
         <div className="mb-8">
-          <InteractionPanel />
+          <InteractionPanel 
+            labResults={adaptiveData?.ui_components?.components?.results_view?.data || []}
+            persona={userPersona}
+          />
         </div>
 
         {/* Lab Results with Time Range */}
@@ -103,7 +212,7 @@ const Dashboard = () => {
                   Showing results from the last 3 months with trend analysis and insights
                 </p>
               </div>
-              <AnalystAlexView results={mockLabResults} />
+              <AnalystAlexView results={adaptiveData?.ui_components?.components?.results_view?.data || []} />
             </TabsContent>
 
             <TabsContent value="history" className="mt-6">

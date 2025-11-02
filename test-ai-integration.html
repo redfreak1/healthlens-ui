@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Integration Test</title>
+</head>
+<body>
+    <h1>Testing AI Integration</h1>
+    <div id="results"></div>
+
+    <script>
+        async function testAIPrompt() {
+            try {
+                const response = await fetch('http://10.44.215.180:4192/api/v1/ai/prompt/balanced');
+                const data = await response.json();
+                document.getElementById('results').innerHTML = `
+                    <h2>AI Prompt Test Result:</h2>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                document.getElementById('results').innerHTML = `
+                    <h2>Error:</h2>
+                    <p style="color: red;">${error.message}</p>
+                `;
+            }
+        }
+
+        // Test on page load
+        testAIPrompt();
+    </script>
+</body>
+</html>

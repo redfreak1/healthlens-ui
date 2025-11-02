@@ -1,5 +1,138 @@
+// API Types
+export interface UserProfile {
+  user_id: string;
+  age: number;
+  gender: string;
+  conditions: string;
+  [key: string]: any;
+}
+
+export interface QuestionnaireResponse {
+  tracking_style: string;
+  motivation: string;
+  time_spent: string;
+  tech_comfort: string;
+  dashboard_preference: string;
+}
+
+export interface PersonaCalculationRequest {
+  user_profile: UserProfile;
+  questionnaire_responses: QuestionnaireResponse;
+}
+
+export interface PersonaResult {
+  persona: string;
+  confidence: number;
+  reasoning: string;
+}
+
+export interface AIContentRequest {
+  query: string;
+  persona: string;
+  context?: any;
+}
+
+export interface AIContentResponse {
+  response: string;
+  persona_adapted: boolean;
+  sources?: string[];
+}
+
+export interface AIGenerationRequest {
+  persona: string;
+  lab_results: LabResult[];
+  template_type: string;
+  user_context?: any;
+}
+
+export interface AIGenerationResponse {
+  content: string;
+  ui_components: any;
+  recommendations: string[];
+}
+
+export interface AIPromptResponse {
+  prompt_template: string;
+  persona_context: string;
+  instructions: string[];
+}
+
+export interface LabResult {
+  name: string;
+  value: number;
+  unit: string;
+  reference_range: {
+    min: number;
+    max: number;
+  };
+  category: string;
+  status: "normal" | "high" | "low" | "critical";
+}
+
+export interface AdaptiveViewResponse {
+  persona: string;
+  ui_components: {
+    layout: string;
+    components: {
+      header: {
+        type: string;
+        title: string;
+        subtitle: string;
+      };
+      results_view: {
+        type: string;
+        data: LabResult[];
+        config: {
+          type: string;
+          highlight_abnormal: boolean;
+          use_plain_language: boolean;
+          show_reference_ranges: boolean;
+        };
+      };
+      summary: {
+        type: string;
+        content: string;
+        config: {
+          type: string;
+          include_recommendations: boolean;
+          medical_context: boolean;
+        };
+      };
+    };
+    styling: {
+      font_size: string;
+      contrast: string;
+      colors: string;
+    };
+    persona: string;
+  };
+  lab_results: LabResult[];
+  recommendations: string[];
+  cache_hit: boolean;
+}
+
+export interface PersonaInfo {
+  persona?: string;
+  name: string;
+  description: string;
+  category: string;
+  status?: string;
+  strengths?: string[];
+  focus_areas?: string[];
+  dashboard_type?: string;
+  ui_preferences?: {
+    show_detailed_charts?: boolean;
+    show_trends?: boolean;
+    show_raw_data?: boolean;
+    complexity_level?: string;
+    show_medical_context?: boolean;
+    highlight_abnormal?: boolean;
+    simple_language?: boolean;
+  };
+}
+
 // API configuration
-const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = 'http://10.44.215.180:4192/api/v1';
 
 // API client functions
 export const api = {
@@ -61,18 +194,45 @@ export const api = {
 
   // AI related endpoints
   ai: {
-    generateContent: async (persona: string, labResults: any[], userContext?: any) => {
+    // Get AI prompt template for persona
+    getPrompt: async (personaType: string): Promise<AIPromptResponse> => {
+      const response = await fetch(`${API_BASE_URL}/ai/prompt/${personaType}`);
+      if (!response.ok) throw new Error(`API Error: ${response.status}`);
+      return response.json();
+    },
+
+    // Generate AI content
+    generate: async (request: AIGenerationRequest): Promise<AIGenerationResponse> => {
       const response = await fetch(`${API_BASE_URL}/ai/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(request)
+      });
+      if (!response.ok) throw new Error(`API Error: ${response.status}`);
+      return response.json();
+    },
+
+    // Legacy endpoint for backward compatibility
+    generateContent: async (query: string, persona: string, context?: any) => {
+      const response = await fetch(`${API_BASE_URL}/ai/generate-content`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          query,
           persona,
-          lab_results: labResults,
-          template_type: 'default',
-          user_context: userContext
+          context
         })
       });
       if (!response.ok) throw new Error(`API Error: ${response.status}`);
+      return response.json();
+    }
+  },
+
+  // Health check endpoint
+  health: {
+    check: async () => {
+      const response = await fetch(`${API_BASE_URL}/health`);
+      if (!response.ok) throw new Error(`Health check failed: ${response.status}`);
       return response.json();
     }
   }

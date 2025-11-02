@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Activity, Heart, Bell, FileText, Smartphone } from "lucide-react";
+import { Activity, Heart, Bell, FileText, Smartphone, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { PersonaQuestionnaire, PersonaType, QuestionnaireResponses } from "@/components/PersonaQuestionnaire";
+import { api, UserProfile, PersonaCalculationRequest } from "@/lib/api";
+import { getCurrentUserId } from "@/lib/user";
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState<"profile" | "questionnaire">("profile");
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  const [userProfileData, setUserProfileData] = useState<UserProfile | null>(null);
   const [permissions, setPermissions] = useState({
     medicalRecords: false,
     healthApps: false,
@@ -21,20 +25,122 @@ const Onboarding = () => {
     conditions: "",
   });
 
+  // Fetch user profile data on component mount
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        setIsLoadingProfile(true);
+        
+        // Get the current user ID from login
+        const currentUserId = getCurrentUserId();
+        
+        const profileData = await api.data.getUserProfile(currentUserId);
+        setUserProfileData(profileData);
+        
+        // Store in localStorage for use in other places
+        localStorage.setItem('userProfileData', JSON.stringify(profileData));
+        
+        // Pre-populate form if profile exists
+        if (profileData) {
+          setProfile({
+            age: profileData.age?.toString() || "",
+            gender: profileData.gender || "",
+            conditions: profileData.conditions || "",
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
   const handleGetStarted = () => {
     setStep("questionnaire");
   };
 
-  const handleQuestionnaireComplete = (persona: PersonaType, responses: QuestionnaireResponses) => {
-    // Store persona and responses in localStorage or context
-    localStorage.setItem("userPersona", persona);
-    localStorage.setItem("questionnaireResponses", JSON.stringify(responses));
-    localStorage.setItem("userProfile", JSON.stringify(profile));
-    localStorage.setItem("userPermissions", JSON.stringify(permissions));
-    
-    // Navigate to persona calculation with the calculated persona
-    navigate("/persona-calculation", { state: { persona, responses, profile, permissions } });
+  const handleQuestionnaireComplete = async (localPersona: PersonaType, responses: QuestionnaireResponses) => {
+    try {
+      setIsLoadingProfile(true); // Reuse loading state for persona calculation
+      
+      // Get the current user ID from login
+      const currentUserId = getCurrentUserId();
+      
+      // Prepare API request payload
+      const userProfile: UserProfile = userProfileData || {
+        user_id: currentUserId,
+        age: parseInt(profile.age) || 25,
+        gender: profile.gender || "Not specified",
+        conditions: profile.conditions || "None"
+      };
+
+      const questionnaireResponses = {
+        tracking_style: responses.trackingStyle,
+        motivation: responses.motivation,
+        time_spent: responses.timeSpent,
+        tech_comfort: responses.techComfort,
+        dashboard_preference: responses.dashboardPreference
+      };
+
+      // Call persona calculation API using centralized API client
+      const personaResult = await api.persona.calculate(userProfile, questionnaireResponses);
+      
+      // Store API results in localStorage
+      localStorage.setItem("userPersona", personaResult.persona);
+      localStorage.setItem("personaConfidence", personaResult.confidence.toString());
+      localStorage.setItem("personaReasoning", personaResult.reasoning);
+      localStorage.setItem("questionnaireResponses", JSON.stringify(responses));
+      localStorage.setItem("userProfile", JSON.stringify(profile));
+      localStorage.setItem("userPermissions", JSON.stringify(permissions));
+      
+      // Navigate to persona calculation with the API result
+      navigate("/persona-calculation", { 
+        state: { 
+          persona: personaResult.persona, 
+          confidence: personaResult.confidence,
+          reasoning: personaResult.reasoning,
+          responses, 
+          profile, 
+          permissions 
+        } 
+      });
+      
+    } catch (error) {
+      console.error('Error calculating persona:', error);
+      // Fall back to local calculation if API call fails
+      localStorage.setItem("userPersona", localPersona);
+      localStorage.setItem("questionnaireResponses", JSON.stringify(responses));
+      localStorage.setItem("userProfile", JSON.stringify(profile));
+      localStorage.setItem("userPermissions", JSON.stringify(permissions));
+      
+      navigate("/persona-calculation", { state: { persona: localPersona, responses, profile, permissions } });
+    } finally {
+      setIsLoadingProfile(false);
+    }
   };
+
+  // Show loading state while fetching profile or calculating persona
+  if (isLoadingProfile) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="p-8 text-center">
+          <Loader2 className="w-12 h-12 animate-spin mx-auto mb-4 text-primary" />
+          <h3 className="text-xl font-bold mb-2">
+            {step === "questionnaire" ? "Calculating Your Persona" : "Loading Your Profile"}
+          </h3>
+          <p className="text-muted-foreground">
+            {step === "questionnaire" 
+              ? "Analyzing your responses to create your personalized experience..." 
+              : "Fetching your health data..."
+            }
+          </p>
+        </Card>
+      </div>
+    );
+  }
 
   if (step === "questionnaire") {
     return (

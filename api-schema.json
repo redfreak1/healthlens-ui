@@ -1,0 +1,1179 @@
+﻿{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "HealthLens API",
+        "description": "Personalized health dashboard API",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/v1/adaptive-view": {
+            "get": {
+                "summary": "Get Adaptive View",
+                "description": "Main adaptive view endpoint that implements the sequence diagram flow:\n1. Check cache for existing response\n2. If cache miss: fetch data, determine persona, generate AI content\n3. Cache response and return",
+                "operationId": "get_adaptive_view_api_v1_adaptive_view_get",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "User Id"
+                        }
+                    },
+                    {
+                        "name": "report_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "title": "Report Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/health": {
+            "get": {
+                "summary": "Health Check",
+                "description": "Health check endpoint for the orchestrator",
+                "operationId": "health_check_api_v1_health_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/persona/calculate": {
+            "post": {
+                "summary": "Calculate Persona",
+                "description": "Calculate user persona based on profile and questionnaire responses",
+                "operationId": "calculate_persona_api_v1_persona_calculate_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/app__models__schemas__PersonaCalculationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PersonaResult"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/persona/info/{persona_type}": {
+            "get": {
+                "summary": "Get Persona Info",
+                "description": "Get detailed information about a specific persona",
+                "operationId": "get_persona_info_api_v1_persona_info__persona_type__get",
+                "parameters": [
+                    {
+                        "name": "persona_type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Persona Type"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/persona/templates/{persona_type}": {
+            "get": {
+                "summary": "Get Persona Template Preferences",
+                "description": "Get UI template preferences for a persona",
+                "operationId": "get_persona_template_preferences_api_v1_persona_templates__persona_type__get",
+                "parameters": [
+                    {
+                        "name": "persona_type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Persona Type"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/data/profile/{user_id}": {
+            "get": {
+                "summary": "Get User Profile",
+                "description": "Get user profile by ID",
+                "operationId": "get_user_profile_api_v1_data_profile__user_id__get",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "User Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserProfile"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/data/lab-results/{user_id}": {
+            "get": {
+                "summary": "Get Lab Results",
+                "description": "Get lab results for user",
+                "operationId": "get_lab_results_api_v1_data_lab_results__user_id__get",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "User Id"
+                        }
+                    },
+                    {
+                        "name": "report_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "title": "Report Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/LabResult"
+                                    },
+                                    "title": "Response Get Lab Results Api V1 Data Lab Results  User Id  Get"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/data/lab-results/{user_id}/abnormal": {
+            "get": {
+                "summary": "Get Abnormal Results",
+                "description": "Get only abnormal lab results for user",
+                "operationId": "get_abnormal_results_api_v1_data_lab_results__user_id__abnormal_get",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "User Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/LabResult"
+                                    },
+                                    "title": "Response Get Abnormal Results Api V1 Data Lab Results  User Id  Abnormal Get"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/data/history/{user_id}": {
+            "get": {
+                "summary": "Get User History",
+                "description": "Get user health history",
+                "operationId": "get_user_history_api_v1_data_history__user_id__get",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "User Id"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/data/profile": {
+            "post": {
+                "summary": "Create User Profile",
+                "description": "Create new user profile",
+                "operationId": "create_user_profile_api_v1_data_profile_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "additionalProperties": true,
+                                "type": "object",
+                                "title": "Profile Data"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserProfile"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ai/generate": {
+            "post": {
+                "summary": "Generate Ai Content",
+                "description": "Generate AI content based on persona and lab results",
+                "operationId": "generate_ai_content_api_v1_ai_generate_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AIGenerationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AIGenerationResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ai/prompt/{persona_type}": {
+            "get": {
+                "summary": "Get Ai Prompt For Persona",
+                "description": "Get AI prompt template for a specific persona",
+                "operationId": "get_ai_prompt_for_persona_api_v1_ai_prompt__persona_type__get",
+                "parameters": [
+                    {
+                        "name": "persona_type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Persona Type"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/test/test": {
+            "get": {
+                "summary": "Test Endpoint",
+                "description": "Simple test endpoint",
+                "operationId": "test_endpoint_api_v1_test_test_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/test/calculate-simple": {
+            "post": {
+                "summary": "Calculate Persona Simple",
+                "description": "Simplified persona calculation endpoint for testing",
+                "operationId": "calculate_persona_simple_api_v1_test_calculate_simple_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "additionalProperties": true,
+                                "type": "object",
+                                "title": "Data"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/test/personas": {
+            "get": {
+                "summary": "List Personas",
+                "description": "List all available personas",
+                "operationId": "list_personas_api_v1_test_personas_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/persona-fixed/info/{persona_type}": {
+            "get": {
+                "summary": "Get Persona Info Fixed",
+                "description": "Get detailed information about a specific persona - Fixed version",
+                "operationId": "get_persona_info_fixed_api_v1_persona_fixed_info__persona_type__get",
+                "parameters": [
+                    {
+                        "name": "persona_type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Persona Type"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SimplePersonaInfo"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/persona-fixed/calculate-simple": {
+            "post": {
+                "summary": "Calculate Persona Simple",
+                "description": "Simplified persona calculation that always works",
+                "operationId": "calculate_persona_simple_api_v1_persona_fixed_calculate_simple_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "additionalProperties": true,
+                                "type": "object",
+                                "title": "Data"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/persona-fixed/list": {
+            "get": {
+                "summary": "List All Personas",
+                "description": "List all available personas",
+                "operationId": "list_all_personas_api_v1_persona_fixed_list_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/persona-simple/api/v1/persona-simple/info/{persona_type}": {
+            "get": {
+                "tags": [
+                    "persona-simple"
+                ],
+                "summary": "Get Persona Info",
+                "description": "Get persona information by persona type",
+                "operationId": "get_persona_info_api_v1_persona_simple_api_v1_persona_simple_info__persona_type__get",
+                "parameters": [
+                    {
+                        "name": "persona_type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "title": "Persona Type"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": true,
+                                    "title": "Response Get Persona Info Api V1 Persona Simple Api V1 Persona Simple Info  Persona Type  Get"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/persona-simple/api/v1/persona-simple/calculate": {
+            "post": {
+                "tags": [
+                    "persona-simple"
+                ],
+                "summary": "Calculate Persona",
+                "description": "Calculate persona based on user inputs",
+                "operationId": "calculate_persona_api_v1_persona_simple_api_v1_persona_simple_calculate_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/app__api__persona_simple__PersonaCalculationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "title": "Response Calculate Persona Api V1 Persona Simple Api V1 Persona Simple Calculate Post"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/persona-simple/api/v1/persona-simple/types": {
+            "get": {
+                "tags": [
+                    "persona-simple"
+                ],
+                "summary": "Get Available Persona Types",
+                "description": "Get list of all available persona types",
+                "operationId": "get_available_persona_types_api_v1_persona_simple_api_v1_persona_simple_types_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "title": "Response Get Available Persona Types Api V1 Persona Simple Api V1 Persona Simple Types Get"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/persona-simple/api/v1/persona-simple/health": {
+            "get": {
+                "tags": [
+                    "persona-simple"
+                ],
+                "summary": "Persona Health Check",
+                "description": "Health check for persona service",
+                "operationId": "persona_health_check_api_v1_persona_simple_api_v1_persona_simple_health_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "additionalProperties": true,
+                                    "type": "object",
+                                    "title": "Response Persona Health Check Api V1 Persona Simple Api V1 Persona Simple Health Get"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "summary": "Health Check",
+                "operationId": "health_check_health_get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/": {
+            "get": {
+                "summary": "Root",
+                "operationId": "root__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AIGenerationRequest": {
+                "properties": {
+                    "persona": {
+                        "$ref": "#/components/schemas/PersonaType"
+                    },
+                    "lab_results": {
+                        "items": {
+                            "$ref": "#/components/schemas/LabResult"
+                        },
+                        "type": "array",
+                        "title": "Lab Results"
+                    },
+                    "template_type": {
+                        "type": "string",
+                        "title": "Template Type"
+                    },
+                    "user_context": {
+                        "anyOf": [
+                            {
+                                "additionalProperties": true,
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "User Context"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "persona",
+                    "lab_results",
+                    "template_type"
+                ],
+                "title": "AIGenerationRequest"
+            },
+            "AIGenerationResponse": {
+                "properties": {
+                    "content": {
+                        "type": "string",
+                        "title": "Content"
+                    },
+                    "ui_components": {
+                        "additionalProperties": true,
+                        "type": "object",
+                        "title": "Ui Components"
+                    },
+                    "recommendations": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Recommendations"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "content",
+                    "ui_components",
+                    "recommendations"
+                ],
+                "title": "AIGenerationResponse"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "LabResult": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "value": {
+                        "type": "number",
+                        "title": "Value"
+                    },
+                    "unit": {
+                        "type": "string",
+                        "title": "Unit"
+                    },
+                    "reference_range": {
+                        "additionalProperties": {
+                            "type": "number"
+                        },
+                        "type": "object",
+                        "title": "Reference Range"
+                    },
+                    "category": {
+                        "type": "string",
+                        "title": "Category"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/LabResultStatus"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "name",
+                    "value",
+                    "unit",
+                    "reference_range",
+                    "category",
+                    "status"
+                ],
+                "title": "LabResult"
+            },
+            "LabResultStatus": {
+                "type": "string",
+                "enum": [
+                    "normal",
+                    "high",
+                    "low"
+                ],
+                "title": "LabResultStatus"
+            },
+            "PersonaResult": {
+                "properties": {
+                    "persona": {
+                        "$ref": "#/components/schemas/PersonaType"
+                    },
+                    "confidence": {
+                        "type": "number",
+                        "title": "Confidence"
+                    },
+                    "reasoning": {
+                        "type": "string",
+                        "title": "Reasoning"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "persona",
+                    "confidence",
+                    "reasoning"
+                ],
+                "title": "PersonaResult"
+            },
+            "PersonaType": {
+                "type": "string",
+                "enum": [
+                    "detail-oriented",
+                    "analytical",
+                    "tech-savvy",
+                    "quick-bold",
+                    "casual",
+                    "fast-action",
+                    "health-conscious",
+                    "balanced",
+                    "passive",
+                    "beginner",
+                    "intermediate",
+                    "goal-focused",
+                    "action-oriented"
+                ],
+                "title": "PersonaType"
+            },
+            "QuestionnaireResponse": {
+                "properties": {
+                    "tracking_style": {
+                        "type": "string",
+                        "title": "Tracking Style"
+                    },
+                    "motivation": {
+                        "type": "string",
+                        "title": "Motivation"
+                    },
+                    "time_spent": {
+                        "type": "string",
+                        "title": "Time Spent"
+                    },
+                    "tech_comfort": {
+                        "type": "string",
+                        "title": "Tech Comfort"
+                    },
+                    "dashboard_preference": {
+                        "type": "string",
+                        "title": "Dashboard Preference"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "tracking_style",
+                    "motivation",
+                    "time_spent",
+                    "tech_comfort",
+                    "dashboard_preference"
+                ],
+                "title": "QuestionnaireResponse"
+            },
+            "SimplePersonaInfo": {
+                "properties": {
+                    "persona": {
+                        "type": "string",
+                        "title": "Persona"
+                    },
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    },
+                    "category": {
+                        "type": "string",
+                        "title": "Category"
+                    },
+                    "status": {
+                        "type": "string",
+                        "title": "Status"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "persona",
+                    "name",
+                    "description",
+                    "category",
+                    "status"
+                ],
+                "title": "SimplePersonaInfo"
+            },
+            "UserProfile": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "title": "Id"
+                    },
+                    "age": {
+                        "type": "integer",
+                        "title": "Age"
+                    },
+                    "gender": {
+                        "type": "string",
+                        "title": "Gender"
+                    },
+                    "conditions": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Conditions"
+                    },
+                    "created_at": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Created At"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "id",
+                    "age",
+                    "gender"
+                ],
+                "title": "UserProfile"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            },
+            "app__api__persona_simple__PersonaCalculationRequest": {
+                "properties": {
+                    "age": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Age",
+                        "default": 30
+                    },
+                    "tech_comfort": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Tech Comfort",
+                        "default": "intermediate"
+                    }
+                },
+                "type": "object",
+                "title": "PersonaCalculationRequest"
+            },
+            "app__models__schemas__PersonaCalculationRequest": {
+                "properties": {
+                    "user_profile": {
+                        "$ref": "#/components/schemas/UserProfile"
+                    },
+                    "questionnaire_responses": {
+                        "$ref": "#/components/schemas/QuestionnaireResponse"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "user_profile",
+                    "questionnaire_responses"
+                ],
+                "title": "PersonaCalculationRequest"
+            }
+        }
+    }
+}

@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Mic, MicOff, MessageSquare, Send, Volume2, VolumeX } from "lucide-react";
+import { Mic, MicOff, MessageSquare, Send, Volume2, VolumeX, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { api, LabResult, AIPromptResponse } from "@/lib/api";
 
 interface Message {
   role: "user" | "assistant";
@@ -13,7 +14,12 @@ interface Message {
   timestamp: Date;
 }
 
-export const InteractionPanel = () => {
+interface InteractionPanelProps {
+  labResults?: LabResult[];
+  persona?: string;
+}
+
+export const InteractionPanel = ({ labResults = [], persona }: InteractionPanelProps) => {
   const [mode, setMode] = useState<"chat" | "speech">("chat");
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -25,12 +31,44 @@ export const InteractionPanel = () => {
   const [inputText, setInputText] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiPromptContext, setAiPromptContext] = useState<AIPromptResponse | null>(null);
   const [recognition, setRecognition] = useState<any>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  // Initialize speech recognition
+  // Get user persona from localStorage or props
+  const userPersona = persona || localStorage.getItem("userPersona") || "balanced";
+
+  // Scroll to bottom function
+  const scrollToBottom = () => {
+    if (scrollAreaRef.current) {
+      const scrollElement = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollElement) {
+        scrollElement.scrollTo({
+          top: scrollElement.scrollHeight,
+          behavior: 'smooth'
+        });
+      }
+    }
+  };
+
+  // Initialize AI context and speech recognition
   useEffect(() => {
+    // Fetch AI prompt context for persona
+    const fetchAIContext = async () => {
+      try {
+        const promptResponse = await api.ai.getPrompt(userPersona);
+        setAiPromptContext(promptResponse);
+      } catch (error) {
+        console.warn('Failed to fetch AI prompt context:', error);
+        // Continue without AI context
+      }
+    };
+
+    fetchAIContext();
+
+    // Initialize speech recognition
     if (typeof window !== "undefined" && "webkitSpeechRecognition" in window) {
       const SpeechRecognition = (window as any).webkitSpeechRecognition;
       const recognitionInstance = new SpeechRecognition();
@@ -60,19 +98,26 @@ export const InteractionPanel = () => {
 
       setRecognition(recognitionInstance);
     }
-  }, []);
 
-  const handleUserInput = (text: string) => {
+    // Initial scroll to bottom
+    setTimeout(scrollToBottom, 200);
+  }, [userPersona]);
+
+  const handleUserInput = async (text: string) => {
     const userMessage: Message = {
       role: "user",
       content: text,
       timestamp: new Date(),
     };
     setMessages((prev) => [...prev, userMessage]);
+    setIsGenerating(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse = generateAIResponse(text);
+    // Scroll to show loading indicator
+    setTimeout(scrollToBottom, 50);
+
+    try {
+      // Generate AI response using the API
+      const aiResponse = await generateAIResponse(text);
       const assistantMessage: Message = {
         role: "assistant",
         content: aiResponse,
@@ -84,24 +129,73 @@ export const InteractionPanel = () => {
       if (mode === "speech") {
         speakText(aiResponse);
       }
-    }, 1000);
+    } catch (error) {
+      console.error('Failed to generate AI response:', error);
+      const errorMessage: Message = {
+        role: "assistant",
+        content: "I apologize, but I'm having trouble generating a response right now. Please try again later.",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+      
+      toast({
+        title: "AI Error",
+        description: "Failed to generate response. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+      // Scroll to show final response
+      setTimeout(scrollToBottom, 100);
+    }
 
     setInputText("");
   };
 
-  const generateAIResponse = (userQuery: string): string => {
-    const lowerQuery = userQuery.toLowerCase();
+  const generateAIResponse = async (userQuery: string): Promise<string> => {
+    try {
+      // Use the AI generation API
+      const aiRequest = {
+        persona: userPersona,
+        lab_results: labResults,
+        template_type: "chat_response",
+        user_context: {
+          query: userQuery,
+          prompt_context: aiPromptContext?.persona_context,
+          conversation_history: messages.slice(-5) // Include recent conversation context
+        }
+      };
 
-    if (lowerQuery.includes("abnormal") || lowerQuery.includes("concerning")) {
-      return "I see you're asking about abnormal results. Based on your recent labs, your LDL cholesterol is slightly elevated at 135 mg/dL. I recommend discussing lifestyle changes with your doctor.";
-    } else if (lowerQuery.includes("glucose") || lowerQuery.includes("sugar")) {
-      return "Your glucose level is 98 mg/dL, which is within the normal range of 70-99 mg/dL. This is excellent! Keep maintaining your current lifestyle.";
-    } else if (lowerQuery.includes("cholesterol")) {
-      return "Your total cholesterol is 195 mg/dL. While this is borderline high, your HDL (good cholesterol) is strong at 65 mg/dL. Focus on reducing LDL through diet and exercise.";
-    } else if (lowerQuery.includes("trend") || lowerQuery.includes("change")) {
-      return "Over the past 3 months, your glucose has remained stable, which is great. However, your LDL has increased slightly by 8 mg/dL. Consider reducing saturated fats.";
-    } else {
-      return "I can help you understand your lab results. Try asking about specific tests like glucose, cholesterol, or which results are abnormal.";
+      const response = await api.ai.generate(aiRequest);
+      return response.content || "I understand your question, but I'm having trouble providing a detailed response right now.";
+    } catch (error) {
+      console.error('AI generation failed, using fallback:', error);
+      
+      // Fallback to simple responses based on query keywords
+      const lowerQuery = userQuery.toLowerCase();
+      
+      if (lowerQuery.includes("abnormal") || lowerQuery.includes("concerning")) {
+        const abnormalResults = labResults.filter(r => r.status !== "normal");
+        if (abnormalResults.length > 0) {
+          const firstAbnormal = abnormalResults[0];
+          return `I see you're asking about abnormal results. Your ${firstAbnormal.name} is ${firstAbnormal.status} at ${firstAbnormal.value} ${firstAbnormal.unit}. I recommend discussing this with your healthcare provider.`;
+        }
+        return "I'd be happy to help you understand your results. Could you ask about a specific test?";
+      } else if (lowerQuery.includes("glucose") || lowerQuery.includes("sugar")) {
+        const glucoseResult = labResults.find(r => r.name.toLowerCase().includes("glucose"));
+        if (glucoseResult) {
+          return `Your glucose level is ${glucoseResult.value} ${glucoseResult.unit}, which is ${glucoseResult.status}. The normal range is ${glucoseResult.reference_range.min}-${glucoseResult.reference_range.max} ${glucoseResult.unit}.`;
+        }
+        return "I don't see glucose results in your current lab data. Could you ask about another test?";
+      } else if (lowerQuery.includes("cholesterol")) {
+        const cholesterolResult = labResults.find(r => r.name.toLowerCase().includes("cholesterol"));
+        if (cholesterolResult) {
+          return `Your ${cholesterolResult.name} is ${cholesterolResult.value} ${cholesterolResult.unit}, which is ${cholesterolResult.status}. The reference range is ${cholesterolResult.reference_range.min}-${cholesterolResult.reference_range.max} ${cholesterolResult.unit}.`;
+        }
+        return "I don't see cholesterol results in your current lab data. Could you ask about another test?";
+      } else {
+        return "I can help you understand your lab results. Try asking about specific tests or which results might need attention.";
+      }
     }
   };
 
@@ -150,17 +244,18 @@ export const InteractionPanel = () => {
     }
   };
 
-  const handleSendMessage = () => {
-    if (inputText.trim()) {
-      handleUserInput(inputText.trim());
+  const handleSendMessage = async () => {
+    if (inputText.trim() && !isGenerating) {
+      await handleUserInput(inputText.trim());
     }
   };
 
+  // Auto-scroll to bottom when messages change or AI is generating
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
-    }
-  }, [messages]);
+    // Small delay to ensure DOM has updated
+    const timeoutId = setTimeout(scrollToBottom, 100);
+    return () => clearTimeout(timeoutId);
+  }, [messages, isGenerating]);
 
   return (
     <Card className="p-6">
@@ -203,6 +298,16 @@ export const InteractionPanel = () => {
                   </div>
                 </div>
               ))}
+              {isGenerating && (
+                <div className="flex justify-start">
+                  <div className="max-w-[80%] rounded-lg p-3 bg-muted">
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <p className="text-sm">AI is thinking...</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </ScrollArea>
           <div className="flex gap-2">
@@ -210,10 +315,15 @@ export const InteractionPanel = () => {
               placeholder="Ask about your lab results..."
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+              onKeyPress={(e) => e.key === "Enter" && !isGenerating && handleSendMessage()}
+              disabled={isGenerating}
             />
-            <Button onClick={handleSendMessage} size="icon">
-              <Send className="w-4 h-4" />
+            <Button onClick={handleSendMessage} size="icon" disabled={isGenerating}>
+              {isGenerating ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
             </Button>
           </div>
         </TabsContent>
@@ -242,6 +352,16 @@ export const InteractionPanel = () => {
                   </div>
                 </div>
               ))}
+              {isGenerating && (
+                <div className="flex justify-start">
+                  <div className="max-w-[80%] rounded-lg p-3 bg-muted">
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <p className="text-sm">AI is thinking...</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </ScrollArea>
           
