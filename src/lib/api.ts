@@ -132,7 +132,7 @@ export interface PersonaInfo {
 }
 
 // API configuration
-const API_BASE_URL = 'http://10.44.215.180:4192/api/v1';
+const API_BASE_URL = 'https://healthlens-api-master-320501699885.us-central1.run.app/api/v1';
 
 // API client functions
 export const api = {

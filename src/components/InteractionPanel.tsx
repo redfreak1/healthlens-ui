@@ -152,6 +152,45 @@ export const InteractionPanel = ({ labResults = [], persona }: InteractionPanelP
     setInputText("");
   };
 
+  // Helper function to format structured health response
+  const formatHealthResponse = (data: {
+    overall_health_score?: number;
+    key_insights?: string[];
+    recommendations?: string[];
+    risk_factors?: string[];
+  }): string => {
+    let formatted = "";
+    
+    if (data.overall_health_score) {
+      formatted += `**Health Score: ${data.overall_health_score}/100**\n\n`;
+    }
+    
+    if (data.key_insights && Array.isArray(data.key_insights)) {
+      formatted += "**Key Insights:**\n";
+      data.key_insights.forEach((insight: string, index: number) => {
+        formatted += `${index + 1}. ${insight}\n`;
+      });
+      formatted += "\n";
+    }
+    
+    if (data.recommendations && Array.isArray(data.recommendations)) {
+      formatted += "**Recommendations:**\n";
+      data.recommendations.forEach((rec: string, index: number) => {
+        formatted += `${index + 1}. ${rec}\n`;
+      });
+      formatted += "\n";
+    }
+    
+    if (data.risk_factors && Array.isArray(data.risk_factors)) {
+      formatted += "**Risk Factors:**\n";
+      data.risk_factors.forEach((risk: string, index: number) => {
+        formatted += `${index + 1}. ${risk}\n`;
+      });
+    }
+    
+    return formatted.trim();
+  };
+
   const generateAIResponse = async (userQuery: string): Promise<string> => {
     try {
       // Use the AI generation API
@@ -161,13 +200,59 @@ export const InteractionPanel = ({ labResults = [], persona }: InteractionPanelP
         template_type: "chat_response",
         user_context: {
           query: userQuery,
-          prompt_context: aiPromptContext?.persona_context,
-          conversation_history: messages.slice(-5) // Include recent conversation context
+          // prompt_context: aiPromptContext?.persona_context,
+          // conversation_history: messages.slice(-5) // Include recent conversation context
         }
       };
 
       const response = await api.ai.generate(aiRequest);
-      return response.content || "I understand your question, but I'm having trouble providing a detailed response right now.";
+      
+      // Handle nested response structure
+      let content = response.content;
+      
+      // If response has textPayload, parse it
+      if (response.textPayload && typeof response.textPayload === 'string') {
+        try {
+          // Extract JSON from textPayload (it might contain prefix text)
+          const textPayload = response.textPayload;
+          
+          // Look for JSON content in the textPayload
+          const jsonMatch = textPayload.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const parsedContent = JSON.parse(jsonMatch[0]);
+            
+            // Extract meaningful content from the parsed structure
+            if (parsedContent.key_insights && parsedContent.recommendations) {
+              content = formatHealthResponse(parsedContent);
+            } else if (parsedContent.candidates && parsedContent.candidates[0]?.content?.parts?.[0]?.text) {
+              // Handle Gemini API response structure
+              const geminiText = parsedContent.candidates[0].content.parts[0].text;
+              
+              // Try to parse the embedded JSON in Gemini response
+              const embeddedJsonMatch = geminiText.match(/```json\s*([\s\S]*?)\s*```/) || geminiText.match(/\{[\s\S]*\}/);
+              if (embeddedJsonMatch) {
+                try {
+                  const embeddedJson = JSON.parse(embeddedJsonMatch[1] || embeddedJsonMatch[0]);
+                  if (embeddedJson.key_insights && embeddedJson.recommendations) {
+                    content = formatHealthResponse(embeddedJson);
+                  } else {
+                    content = geminiText.replace(/```json|```/g, '').trim();
+                  }
+                } catch {
+                  content = geminiText.replace(/```json|```/g, '').trim();
+                }
+              } else {
+                content = geminiText;
+              }
+            }
+          }
+        } catch (error) {
+          console.warn('Failed to parse textPayload:', error);
+          content = response.textPayload;
+        }
+      }
+      
+      return content || "I understand your question, but I'm having trouble providing a detailed response right now.";
     } catch (error) {
       console.error('AI generation failed, using fallback:', error);
       

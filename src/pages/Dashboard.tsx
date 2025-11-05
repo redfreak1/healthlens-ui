@@ -11,6 +11,8 @@ import { HealthSummary } from "@/components/HealthSummary";
 import { PersonaBadge } from "@/components/PersonaBadge";
 import { WhatsNext } from "@/components/WhatsNext";
 import { InteractionPanel } from "@/components/InteractionPanel";
+import { HealthTrends } from "@/components/HealthTrends";
+import { BoldHealthTrends } from "@/components/BoldHealthTrends";
 import { getCurrentUserId } from "@/lib/user";
 
 const Dashboard = () => {
@@ -50,7 +52,7 @@ const Dashboard = () => {
   const userViewPreference = getViewFromPersona(userPersona);
 
   // Convert API LabResult to component-compatible format
-  const convertLabResults = (apiResults: any[]) => {
+  const convertLabResults = (apiResults: Record<string, unknown>[]) => {
     return apiResults.map(result => ({
       ...result,
       referenceRange: result.reference_range || result.referenceRange || { min: 0, max: 100 }
@@ -446,32 +448,21 @@ const Dashboard = () => {
             </TabsContent>
 
             <TabsContent value="history" className="mt-6">
-              <div className="bg-muted/50 border-l-4 border-muted-foreground p-4 rounded mb-6">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Historical data view - Results older than 3 months
+              <div className="bg-primary/5 border-l-4 border-primary p-4 rounded mb-6">
+                <p className="text-sm font-medium">
+                  Historical data view - {
+                    userViewPreference === "detailed" 
+                      ? "3-year comprehensive trend analysis of your key health metrics"
+                      : "Simple 3-year overview with easy-to-read charts"
+                  }
                 </p>
               </div>
-              <Card className="p-8 text-center">
-                <History className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2">Historical Data Archive</h3>
-                <p className="text-muted-foreground mb-4">
-                  View your health journey over time with year-over-year comparisons
-                </p>
-                <div className="space-y-3 max-w-md mx-auto">
-                  <div className="flex items-center justify-between p-3 bg-accent/5 rounded-lg">
-                    <span className="font-medium">2024 Q1 Results</span>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-accent/5 rounded-lg">
-                    <span className="font-medium">2023 Annual Summary</span>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-accent/5 rounded-lg">
-                    <span className="font-medium">2023 Q3-Q4 Results</span>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                  </div>
-                </div>
-              </Card>
+              
+              {userViewPreference === "detailed" ? (
+                <HealthTrends />
+              ) : (
+                <BoldHealthTrends />
+              )}
             </TabsContent>
           </Tabs>
         </Card>
