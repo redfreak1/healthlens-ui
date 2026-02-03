@@ -241,7 +241,7 @@ const SidebarTrigger = React.forwardRef<React.ElementRef<typeof Button>, React.C
 );
 SidebarTrigger.displayName = "SidebarTrigger";
 
-const SidebarRail = React.forwardRef<HTMLButtonElement, React.ComponentProps<"button">>(
+const SidebarRail = React.forwardRef<htmlButtonElement, React.ComponentProps<"button" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en">>(
   ({ className, ...props }, ref) => {
     const { toggleSidebar } = useSidebar();
 
@@ -269,7 +269,7 @@ const SidebarRail = React.forwardRef<HTMLButtonElement, React.ComponentProps<"bu
 );
 SidebarRail.displayName = "SidebarRail";
 
-const SidebarInset = React.forwardRef<HTMLDivElement, React.ComponentProps<"main">>(({ className, ...props }, ref) => {
+const SidebarInset = React.forwardRef<htmlDivElement, React.ComponentProps<"main" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en">>(({ className, ...props }, ref) => {
   return (
     <main
       ref={ref}
@@ -301,12 +301,12 @@ const SidebarInput = React.forwardRef<React.ElementRef<typeof Input>, React.Comp
 );
 SidebarInput.displayName = "SidebarInput";
 
-const SidebarHeader = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(({ className, ...props }, ref) => {
+const SidebarHeader = React.forwardRef<htmlDivElement, React.ComponentProps<"div" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en">>(({ className, ...props }, ref) => {
   return <div ref={ref} data-sidebar="header" className={cn("flex flex-col gap-2 p-2", className)} {...props} />;
 });
 SidebarHeader.displayName = "SidebarHeader";
 
-const SidebarFooter = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(({ className, ...props }, ref) => {
+const SidebarFooter = React.forwardRef<htmlDivElement, React.ComponentProps<"div" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en">>(({ className, ...props }, ref) => {
   return <div ref={ref} data-sidebar="footer" className={cn("flex flex-col gap-2 p-2", className)} {...props} />;
 });
 SidebarFooter.displayName = "SidebarFooter";
@@ -325,7 +325,7 @@ const SidebarSeparator = React.forwardRef<React.ElementRef<typeof Separator>, Re
 );
 SidebarSeparator.displayName = "SidebarSeparator";
 
-const SidebarContent = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(({ className, ...props }, ref) => {
+const SidebarContent = React.forwardRef<htmlDivElement, React.ComponentProps<"div" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en">>(({ className, ...props }, ref) => {
   return (
     <div
       ref={ref}
@@ -340,7 +340,7 @@ const SidebarContent = React.forwardRef<HTMLDivElement, React.ComponentProps<"di
 });
 SidebarContent.displayName = "SidebarContent";
 
-const SidebarGroup = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(({ className, ...props }, ref) => {
+const SidebarGroup = React.forwardRef<htmlDivElement, React.ComponentProps<"div" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en">>(({ className, ...props }, ref) => {
   return (
     <div
       ref={ref}
@@ -352,7 +352,7 @@ const SidebarGroup = React.forwardRef<HTMLDivElement, React.ComponentProps<"div"
 });
 SidebarGroup.displayName = "SidebarGroup";
 
-const SidebarGroupLabel = React.forwardRef<HTMLDivElement, React.ComponentProps<"div"> & { asChild?: boolean }>(
+const SidebarGroupLabel = React.forwardRef<htmlDivElement, React.ComponentProps<"div" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en"> & { asChild?: boolean }>(
   ({ className, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "div";
 
@@ -372,7 +372,7 @@ const SidebarGroupLabel = React.forwardRef<HTMLDivElement, React.ComponentProps<
 );
 SidebarGroupLabel.displayName = "SidebarGroupLabel";
 
-const SidebarGroupAction = React.forwardRef<HTMLButtonElement, React.ComponentProps<"button"> & { asChild?: boolean }>(
+const SidebarGroupAction = React.forwardRef<htmlButtonElement, React.ComponentProps<"button" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en"> & { asChild?: boolean }>(
   ({ className, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
 
@@ -394,19 +394,19 @@ const SidebarGroupAction = React.forwardRef<HTMLButtonElement, React.ComponentPr
 );
 SidebarGroupAction.displayName = "SidebarGroupAction";
 
-const SidebarGroupContent = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
+const SidebarGroupContent = React.forwardRef<htmlDivElement, React.ComponentProps<"div" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en">>(
   ({ className, ...props }, ref) => (
     <div ref={ref} data-sidebar="group-content" className={cn("w-full text-sm", className)} {...props} />
   ),
 );
 SidebarGroupContent.displayName = "SidebarGroupContent";
 
-const SidebarMenu = React.forwardRef<HTMLUListElement, React.ComponentProps<"ul">>(({ className, ...props }, ref) => (
+const SidebarMenu = React.forwardRef<htmlUListElement, React.ComponentProps<"ul" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en">>(({ className, ...props }, ref) => (
   <ul ref={ref} data-sidebar="menu" className={cn("flex w-full min-w-0 flex-col gap-1", className)} {...props} />
 ));
 SidebarMenu.displayName = "SidebarMenu";
 
-const SidebarMenuItem = React.forwardRef<HTMLLIElement, React.ComponentProps<"li">>(({ className, ...props }, ref) => (
+const SidebarMenuItem = React.forwardRef<htmlLIElement, React.ComponentProps<"li" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en">>(({ className, ...props }, ref) => (
   <li ref={ref} data-sidebar="menu-item" className={cn("group/menu-item relative", className)} {...props} />
 ));
 SidebarMenuItem.displayName = "SidebarMenuItem";
@@ -505,7 +505,7 @@ const SidebarMenuAction = React.forwardRef<
 });
 SidebarMenuAction.displayName = "SidebarMenuAction";
 
-const SidebarMenuBadge = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
+const SidebarMenuBadge = React.forwardRef<htmlDivElement, React.ComponentProps<"div" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en">>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
@@ -558,7 +558,7 @@ const SidebarMenuSkeleton = React.forwardRef<
 });
 SidebarMenuSkeleton.displayName = "SidebarMenuSkeleton";
 
-const SidebarMenuSub = React.forwardRef<HTMLUListElement, React.ComponentProps<"ul">>(
+const SidebarMenuSub = React.forwardRef<htmlUListElement, React.ComponentProps<"ul" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en">>(
   ({ className, ...props }, ref) => (
     <ul
       ref={ref}
@@ -574,7 +574,7 @@ const SidebarMenuSub = React.forwardRef<HTMLUListElement, React.ComponentProps<"
 );
 SidebarMenuSub.displayName = "SidebarMenuSub";
 
-const SidebarMenuSubItem = React.forwardRef<HTMLLIElement, React.ComponentProps<"li">>(({ ...props }, ref) => (
+const SidebarMenuSubItem = React.forwardRef<htmlLIElement, React.ComponentProps<"li" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en" lang="en">>(({ ...props }, ref) => (
   <li ref={ref} {...props} />
 ));
 SidebarMenuSubItem.displayName = "SidebarMenuSubItem";

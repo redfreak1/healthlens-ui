@@ -1,0 +1,17 @@
+[1mRunning axe-core 4.11.1 in chrome-headless[22m
+[1m[22m
+[1mTesting [4m[34mhttp://localhost:8080[39m[24m[22m ... please wait, this may take a minute.
+
+[31m[1m  Violation of "region" with 1 occurrences![22m[39m
+[31m[1m[22m[39m    Ensure all page content is contained by landmarks. Correct invalid elements at:
+     - vite-error-overlay .window
+    For details, see: [4m[34mhttps://dequeuniversity.com/rules/axe/4.11/region[39m[24m
+
+[31m[1m  Violation of "scrollable-region-focusable" with 1 occurrences![22m[39m
+[31m[1m[22m[39m    Ensure elements that have scrollable content are accessible by keyboard. Correct invalid elements at:
+     - vite-error-overlay .backdrop
+    For details, see: [4m[34mhttps://dequeuniversity.com/rules/axe/4.11/scrollable-region-focusable[39m[24m
+[31m[1m[22m[39m
+[31m[1m2 Accessibility issues detected.[22m[39m
+[1mTesting complete of 1 pages[22m
+[1m[22m

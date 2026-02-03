@@ -1,0 +1,99 @@
+{
+  "timestamp": "2026-02-03T13:26:45.674Z",
+  "stats": {
+    "filesScanned": 28,
+    "linesScanned": 4667,
+    "issuesFound": null,
+    "startTime": 1770125205641,
+    "endTime": 1770125205674,
+    "duration": "0.03"
+  },
+  "results": {
+    "critical": [],
+    "high": [],
+    "medium": [],
+    "low": [
+      {
+        "id": "custom-missing-data-testid",
+        "rule": "Interactive element missing data-testid for testing",
+        "file": "src\\components\\AIQuerySection.tsx",
+        "line": 71,
+        "column": 7,
+        "severity": "low",
+        "category": "custom",
+        "fix": "Add data-testid attribute for reliable testing",
+        "snippet": "<Button \r\n        onClick={handleQuery} \r\n        disabled={loading}\r\n        className=\"w-full mb-4...",
+        "code": "69:       </p>\r\n70: \r\n71:       <Button \r\n72:         onClick={handleQuery} \r\n73:         disabled={loading}\r",
+        "framework": "react"
+      },
+      {
+        "id": "custom-missing-data-testid",
+        "rule": "Interactive element missing data-testid for testing",
+        "file": "src\\pages\\PersonaLanding.tsx",
+        "line": 243,
+        "column": 11,
+        "severity": "low",
+        "category": "custom",
+        "fix": "Add data-testid attribute for reliable testing",
+        "snippet": "<Button onClick={() =>",
+        "code": "241:             We couldn't fetch your persona details. You can still continue to your dashboard.\r\n242:           </p>\r\n243:           <Button onClick={() => navigate(\"/dashboard\")}>\r\n244:             Go to Dashboard\r\n245:           </Button>\r",
+        "framework": "react"
+      },
+      {
+        "id": "custom-missing-data-testid",
+        "rule": "Interactive element missing data-testid for testing",
+        "file": "src\\pages\\PersonaLanding.tsx",
+        "line": 278,
+        "column": 11,
+        "severity": "low",
+        "category": "custom",
+        "fix": "Add data-testid attribute for reliable testing",
+        "snippet": "<Button\r\n            variant={view === \"bold\" ? \"default\" : \"outline\"}\r\n            onClick={() =>",
+        "code": "276:         {/* View Toggle - Commented out as view is now determined by persona\r\n277:         <div className=\"flex justify-center gap-2 mb-8\">\r\n278:           <Button\r\n279:             variant={view === \"bold\" ? \"default\" : \"outline\"}\r\n280:             onClick={() => {\r",
+        "framework": "react"
+      },
+      {
+        "id": "custom-missing-data-testid",
+        "rule": "Interactive element missing data-testid for testing",
+        "file": "src\\pages\\PersonaLanding.tsx",
+        "line": 287,
+        "column": 11,
+        "severity": "low",
+        "category": "custom",
+        "fix": "Add data-testid attribute for reliable testing",
+        "snippet": "<Button\r\n            variant={view === \"detailed\" ? \"default\" : \"outline\"}\r\n            onClick={() ...",
+        "code": "285:             Bold View\r\n286:           </Button>\r\n287:           <Button\r\n288:             variant={view === \"detailed\" ? \"default\" : \"outline\"}\r\n289:             onClick={() => {\r",
+        "framework": "react"
+      },
+      {
+        "id": "custom-missing-data-testid",
+        "rule": "Interactive element missing data-testid for testing",
+        "file": "src\\pages\\PersonaLanding.tsx",
+        "line": 243,
+        "column": 11,
+        "severity": "low",
+        "category": "custom",
+        "fix": "Add data-testid attribute for reliable testing",
+        "snippet": "<Button onClick={() =>",
+        "code": "241:             We couldn't fetch your persona details. You can still continue to your dashboard.\r\n242:           </p>\r\n243:           <Button onClick={() => navigate(\"/dashboard\")}>\r\n244:             Go to Dashboard\r\n245:           </Button>\r",
+        "framework": "react"
+      }
+    ],
+    "passed": 26
+  },
+  "options": {
+    "quick": false,
+    "full": true,
+    "file": null,
+    "directory": "./src",
+    "type": "all",
+    "severity": "low",
+    "report": false,
+    "output": "./a11y-report.json",
+    "format": "json",
+    "failOnCritical": false,
+    "failOnHigh": false,
+    "fix": false,
+    "ignore": []
+  }
+}
